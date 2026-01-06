@@ -1,10 +1,27 @@
-
-.venv/
-__pycache__/
-data/
-logs/
-*.log
-.pytest_cache/
-.ruff_cache/
-.vscode/
-.idea/
+project/
+  src/
+    <pacote>/
+      __init__.py
+      ingest/
+      transform/
+      quality/
+      utils/
+  tests/
+    unit/
+    integration/
+  configs/
+    config.example.yaml
+  data/
+    README.md
+    sample/            # amostras pequenas (opcional)
+  notebooks/
+    README.md          # regra do notebook aqui
+  docs/
+    data_dictionary.md
+    runbook.md
+  logs/               # (ignorado)
+  outputs/            # (ignorado)
+  pyproject.toml
+  poetry.lock
+  README.md
+  .gitignore
