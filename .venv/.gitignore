@@ -1,27 +1,44 @@
-project/
-  src/
-    <pacote>/
-      __init__.py
-      ingest/
-      transform/
-      quality/
-      utils/
-  tests/
-    unit/
-    integration/
-  configs/
-    config.example.yaml
-  data/
-    README.md
-    sample/            # amostras pequenas (opcional)
-  notebooks/
-    README.md          # regra do notebook aqui
-  docs/
-    data_dictionary.md
-    runbook.md
-  logs/               # (ignorado)
-  outputs/            # (ignorado)
-  pyproject.toml
-  poetry.lock
-  README.md
-  .gitignore
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cache/
+.coverage
+htmlcov/
+
+# Virtualenv
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Env / Secrets
+.env
+.env.*
+secrets/
+credentials/
+*.key
+*.pem
+
+# Data & outputs (DE)
+data/
+!data/README.md
+!data/sample/
+outputs/
+logs/
+reports/
+artifacts/
+tmp/
+temp/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Build
+dist/
+build/
+*.egg-info/
