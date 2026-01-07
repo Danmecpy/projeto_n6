@@ -139,38 +139,47 @@ Os testes utilizam **fixtures isoladas**, garantindo confiabilidade e execução
 
 ## Estrutura do Projeto
 
+# 📦 Projeto N6 — Pipeline de Engenharia de Dados
+
+Este projeto implementa um **pipeline de Engenharia de Dados** com separação **Bronze → Silver → Gold**, foco em **qualidade de dados**, **observabilidade** e **boas práticas de produção**.
+
+---
+
+## 🗂 Estrutura do Projeto
+
+```text
 projeto_n6/
 │
 ├── data/
-│ ├── bronze/
-│ ├── silver/
-│ ├── gold/
-│ └── metrics/
+│   ├── bronze/                 # Dados brutos (ingestão)
+│   ├── silver/                 # Dados tratados e validados
+│   ├── gold/                   # Dados prontos para análise/BI
+│   └── metrics/                # Métricas estruturadas do pipeline
 │
-├── logs/
+├── logs/                        # Logs de execução do pipeline
 │
-├── src/projeto_n6/
-│ ├── pipeline.py
-│ ├── run_context.py
-│ ├── paths.py
-│ ├── settings.py
-│ └── silver/
-│ └── orders.py
+├── src/
+│   └── projeto_n6/
+│       ├── pipeline.py         # Orquestração principal do pipeline
+│       ├── run_context.py      # Contexto de execução (run_id, run_date)
+│       ├── paths.py            # Gerenciamento de paths e particionamento
+│       ├── settings.py         # Configurações globais do projeto
+│       │
+│       └── silver/
+│           └── orders.py       # Regras de negócio e qualidade (Silver - orders)
 │
 ├── tests/
-│ └── silver/
-│ ├── conftest.py
-│ ├── test_orders_schema.py
-│ ├── test_orders_pk.py
-│ ├── test_orders_business_rules.py
-│ └── test_orders_sanity.py
+│   └── silver/
+│       ├── conftest.py
+│       ├── test_orders_schema.py        # Testes de esquema
+│       ├── test_orders_pk.py            # Testes de chave primária
+│       ├── test_orders_business_rules.py# Regras de negócio
+│       └── test_orders_sanity.py        # Testes de sanidade
 │
-├── pyproject.toml
-├── poetry.lock
-└── README.md
+├── pyproject.toml               # Configuração do Poetry e dependências
+├── poetry.lock                  # Lockfile de dependências
+└── README.md                    # Documentação do projeto
 
-yaml
-Copiar código
 
 ---
 
@@ -185,16 +194,3 @@ Copiar código
 
 ---
 
-## Como Executar o Projeto
-
-### Instalar dependências
-```bash
-poetry install
-Executar o pipeline
-bash
-Copiar código
-poetry run python -m projeto_n6.pipeline
-Executar os testes
-bash
-Copiar código
-poetry run pytest -v
