@@ -1,168 +1,146 @@
-# Silver Layer Design — Projeto Olist (Nível 6)
+# Silver Design — Projeto Olist
 
-## 1. Objetivo da Camada Silver
+## Objetivo
+Transformar dados **Bronze (raw)** em dados **Silver (confiáveis)** para suportar a camada Gold/Power BI.
 
-A camada **Silver** tem como objetivo transformar os dados brutos (Bronze) em dados **confiáveis, padronizados e validados**, prontos para modelagem analítica na camada Gold.
-
-Nesta camada são aplicadas:
-- limpeza de dados
-- normalização
-- padronização
-- correções de tipos
-- validações de qualidade
-- checagens de integridade relacional
-
-A Silver **não cria métricas analíticas finais** nem agregações para BI.
-
----
-
-## 2. Tabela Fato Principal
-
-### 2.1 Identificação da Tabela Fato
-
-A tabela fato principal do projeto é:
-
-**`olist_order_items_dataset`**
-
-### 2.2 Granularidade
-
-A granularidade da tabela fato é definida como:
-
-> **1 linha representa 1 item vendido em um pedido.**
-
-Essa granularidade permite análises detalhadas de:
-- receita
-- volume de vendas
-- frete
-- produto
-- vendedor
-- comportamento ao longo do tempo
-
-### 2.3 Justificativa
-
-Apesar de existirem outras tabelas transacionais (orders, payments, reviews), a tabela `order_items` representa o **menor nível de evento de venda**, sendo a base correta para análises financeiras e operacionais.
-
----
-
-## 3. Tabelas de Dimensão
-
-As tabelas de dimensão fornecem **contexto descritivo** para a tabela fato, sem conter métricas numéricas principais.
-
-Dimensões do projeto:
-
-- **`olist_customers_dataset`** → informações do cliente
-- **`olist_products_dataset`** → informações do produto
-- **`olist_sellers_dataset`** → informações do vendedor
-- **`olist_orders_dataset`** → datas e status do pedido
-- **`olist_order_payments_dataset`** → forma e valores de pagamento
-- **`olist_order_reviews_dataset`** → avaliações dos clientes
-- **`olist_geolocation_dataset`** → localização geográfica
-- **`product_category_name_translation`** → tradução das categorias de produto
-
-Essas dimensões serão utilizadas na **modelagem estrela** na camada Gold.
-
----
-
-## 4. Responsabilidades da Camada Silver
-
-A camada Silver é responsável por:
-
-- limpeza de dados inconsistentes
-- normalização de textos (acentos, caixa, espaços)
-- padronização de formatos (datas, números, códigos)
-- conversão correta de tipos de dados
-- validação de chaves primárias (PK)
-- validação de chaves estrangeiras (FK)
-- aplicação de regras de qualidade de dados
-- execução de sanity checks
-
-A camada Silver **não deve**:
-- criar métricas finais
-- realizar agregações analíticas
-- preparar dados diretamente para visualização em BI
-
----
-
-## 5. Regras de Qualidade de Dados
-
-### 5.1 Regras Gerais
-
-- Chaves primárias não podem ser nulas
-- Chaves primárias não podem conter duplicidades
-- Chaves estrangeiras devem existir na tabela de referência
-- Valores monetários devem ser positivos
-- Datas inválidas ou fora do intervalo esperado devem ser tratadas
-- Campos obrigatórios não podem ser nulos
-
-### 5.2 Exemplos de Regras por Tabela
-
-**`olist_order_items_dataset`**
-- `order_id` não pode ser nulo
-- `product_id` deve existir em `products`
-- `seller_id` deve existir em `sellers`
-- `price` > 0
-- `freight_value` ≥ 0
-
-**`olist_customers_dataset`**
-- `customer_id` não pode ser nulo
-- `customer_state` deve ser um estado válido
-- `customer_zip_code_prefix` deve ser numérico
-
----
-
-## 6. Uso de Ferramentas na Camada Silver
-
-### 6.1 Python
-
-Python será utilizado para:
-- limpeza textual (acentos, maiúsculas/minúsculas)
-- normalização de strings
-- tratamento de datas inválidas
+Silver aplica:
+- limpeza / normalização / padronização
 - conversão de tipos
-- regras de validação linha a linha
-- enriquecimento leve de dados
+- validações de qualidade (PK/FK, regras de domínio)
+- sanity checks e métricas operacionais
 
-### 6.2 SQL
-
-SQL será utilizado para:
-- validação de chaves primárias (PK)
-- validação de chaves estrangeiras (FK)
-- detecção de duplicidades
-- contagem de registros entre camadas
-- sanity checks relacionais
-
-## Validação de Chaves
-
-A camada Silver valida a integridade dos dados através de:
-
-- verificação de unicidade e não nulidade das chaves primárias
-- validação da existência das chaves estrangeiras nas tabelas de referência
-- identificação de registros órfãos
-- comparação de volumes entre camadas
-
-Essas validações garantem a consistência relacional antes da modelagem analítica.
+Silver **não** faz agregações analíticas nem prepara visualizações.
 
 ---
 
-## 7. Sanity Checks
-
-Sanity checks são verificações simples para garantir que os dados fazem sentido, como:
-- ausência de valores monetários negativos
-- datas no intervalo esperado
-- volumes de dados compatíveis entre Bronze e Silver
-- integridade entre tabelas relacionadas
-
-Essas verificações ajudam a detectar erros rapidamente antes da camada Gold.
+## Fato principal e granularidade
+**Fato principal:** `olist_order_items_dataset`  
+**Granularidade:** 1 linha = 1 item vendido em um pedido (`order_id` + `order_item_id`).
 
 ---
 
-## 8. Resultado Esperado da Silver
+## Tabelas consideradas no projeto
+### Core (usadas para Gold)
+- `olist_orders_dataset` (processo/status + ponte p/ cliente)
+- `olist_order_items_dataset` (vendas por item)
+- `olist_order_payments_dataset` (receita financeira)
+- `olist_order_reviews_dataset` (satisfação)
+- `olist_customers_dataset` (cliente)
+- `olist_products_dataset` (produto)
+- `olist_sellers_dataset` (vendedor)
+- `product_category_name_translation` (categoria legível)
 
-Ao final da camada Silver, os dados devem estar:
-- limpos
-- padronizados
-- validados
-- confiáveis
-- prontos para modelagem analítica na camada Gold
+### Opcionais
+- `olist_geolocation_dataset` (usar somente se houver mapa/geo enriquecida)
 
-A Silver estabelece a **base de confiança** do pipeline de dados.
+---
+
+## Ferramentas (por responsabilidade)
+- **Python:** limpeza textual, datas inválidas, conversão de tipos, regras linha a linha, criação de métricas e rejects
+- **SQL:** validação relacional (PK/FK), contagens, duplicidades, sanity checks e auditoria
+
+---
+
+## Política de Rejects (quarentena)
+Registros que violarem regras da Silver **não são descartados silenciosamente**:
+- vão para `data/rejects/...` com motivo e rastreabilidade
+- Silver entrega apenas registros aprovados em `data/silver/...`
+
+## MVP (Primeira entrega Silver)
+
+Objetivo do MVP: entregar um primeiro ciclo completo Bronze → Silver → Gold (star schema) → Power BI,
+com qualidade e rastreabilidade, evitando escopo excessivo.
+
+### Tabelas no MVP (core)
+Estas tabelas são suficientes para responder KPIs de Vendas + SLA + Reviews:
+
+- `orders` (controladora: status + datas + customer_id)
+- `order_items` (fato comercial por item)
+- `payments` (fato financeiro por pagamento)
+- `reviews` (fato de satisfação)
+- `customers` (dim cliente)
+- `products` (dim produto)
+- `sellers` (dim vendedor)
+
+### Tabelas fora do MVP (fase 2)
+- `geolocation` (só entra se houver necessidade real de mapa/geo enriquecida)
+- `category_translation` (entra se o dashboard precisar de categoria legível; caso contrário pode ser fase 2)
+
+### Saídas do MVP (Parquet)
+- `data/silver/olist/run_date=YYYY-MM-DD/<tabela>.parquet`
+- `data/rejects/olist/run_date=YYYY-MM-DD/<tabela>_rejects.parquet`
+- `data/metrics/olist/run_date=YYYY-MM-DD/metrics.parquet` (métricas operacionais)
+
+---
+
+## Política de Qualidade: ERROR vs REJECT vs WARNING
+
+Para operar como pipeline confiável (padrão corporativo), o projeto classifica problemas de dados em 3 níveis.
+
+### 1) ERROR (falha do pipeline / bloqueia a execução)
+Condições que indicam quebra estrutural, risco de gerar dados incorretos ou inconsistência grave.
+
+**Dispara ERROR quando:**
+- arquivo/tabela essencial não existe (ex: `orders` ausente)
+- schema mudou de forma inesperada (colunas críticas faltando)
+- tabela core vazia após leitura (ex: 0 linhas em `order_items`)
+- taxa de rejeição acima do limite operacional (ver limites)
+- falha de escrita do output Parquet (I/O)
+
+**Ação do pipeline:**
+- interromper a execução
+- registrar o motivo em log
+- não publicar Silver/Gold incompletos
+
+### 2) REJECT (quarentena / não bloqueia)
+Erros de dado linha a linha que devem ser removidos do dataset “confiável”, mas preservados para auditoria.
+
+**Regras típicas de REJECT:**
+- PK nula ou duplicada
+- FK órfã (ex: item com `product_id` inexistente)
+- valores monetários inválidos (ex: `payment_value < 0`, `price < 0`)
+- `review_score` fora do domínio 1..5
+- datas inválidas que impedem uso (ex: purchase_timestamp nulo)
+
+**Ação do pipeline:**
+- mover a linha para `rejects` com colunas:
+  - `reject_reason`, `reject_rule`, `pipeline_run_id`, `run_timestamp`
+- manter apenas linhas aprovadas no Silver
+
+### 3) WARNING (aviso / segue a execução)
+Sinais de possível problema que não impedem o uso analítico no MVP, mas devem ser monitorados.
+
+**Exemplos de WARNING:**
+- campos descritivos nulos (ex: cidade vazia)
+- outliers suspeitos (frete muito alto, peso muito alto) sem regra firme ainda
+- inconsistências que não quebram chaves (ex: categoria nula)
+
+**Ação do pipeline:**
+- registrar em log e métricas (contagens)
+- não rejeitar no MVP (a menos que vire regra futura)
+
+---
+
+## Limites operacionais (guardrails)
+
+- até **1%** rejeição por tabela: normal
+- **1% a 5%**: alerta (monitorar no dashboard de pipeline)
+- **>5%**: tratar como **ERROR** (revisar regra/ingestão antes de publicar)
+
+Esses limites podem ser ajustados conforme maturidade do pipeline.
+
+
+### Limites (guardrails)
+- até **1%** rejeição: normal
+- **1% a 5%**: alerta (monitorar)
+- **>5%**: tratar como **erro fatal** (revisar regras/ingestão)
+
+---
+
+## Resultado esperado
+Ao final da Silver, os dados devem estar:
+- padronizados e tipados corretamente
+- com integridade relacional garantida (PK/FK)
+- com rastreabilidade (métricas + rejects)
+- prontos para a Gold (modelo estrela no Power BI)
+
