@@ -3,3 +3,8 @@
 2026-01-07 00:47:35,810 - pipeline - INFO - Iniciando Silver: orders
 2026-01-07 00:47:36,806 - pipeline - INFO - Orders Silver concluído | rows_in=99441 | rows_valid=99120 | rows_rejected=321
 2026-01-07 00:47:37,105 - pipeline - INFO - Pipeline finalizado com sucesso
+2026-01-07 01:34:46,545 - pipeline - INFO - Pipeline iniciado
+2026-01-07 01:34:46,546 - pipeline - INFO - run_id=4bc37314-006d-43d0-abd3-785543a2d753
+2026-01-07 01:34:46,547 - pipeline - INFO - Iniciando Silver: orders
+2026-01-07 01:34:47,674 - pipeline - INFO - Orders Silver concluído | rows_in=99441 | rows_valid=99120 | rows_rejected=321
+2026-01-07 01:34:48,153 - pipeline - INFO - Pipeline finalizado com sucesso
