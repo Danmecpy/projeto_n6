@@ -137,14 +137,6 @@ Os testes utilizam **fixtures isoladas**, garantindo confiabilidade e execução
 
 ---
 
-## Estrutura do Projeto
-
-# 📦 Projeto N6 — Pipeline de Engenharia de Dados
-
-Este projeto implementa um **pipeline de Engenharia de Dados** com separação **Bronze → Silver → Gold**, foco em **qualidade de dados**, **observabilidade** e **boas práticas de produção**.
-
----
-
 ## 🗂 Estrutura do Projeto
 
 ```text
